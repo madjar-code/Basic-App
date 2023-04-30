@@ -16,7 +16,6 @@ DEBUG = env.bool('DEBUG', default=False)
 
 ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 
-
 INSTALLED_APPS = [
     'grappelli',
     'django.contrib.admin',
@@ -85,7 +84,7 @@ DATABASES = {
 
 DATA_UPLOAD_MAX_NUMBER_FIELDS = 5000
 
-# AUTH_USER_MODEL = 'users.User'
+AUTH_USER_MODEL = 'users.User'
 
 AUTH_PASSWORD_VALIDATORS = []
 

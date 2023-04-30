@@ -32,7 +32,7 @@ class UserManager(BaseUserManager):
         user.save()
         return user
 
-    def create_user(self, username: str, email: str, password: str,
+    def create_superuser(self, username: str, email: str, password: str,
                     first_name: str = None, last_name: str = None) -> User:
         user: User = self.create_user(username, email=self.normalize_email(email),
                                 first_name=first_name, last_name=last_name,
@@ -59,13 +59,13 @@ class User(UUIDModel, AbstractBaseUser, PermissionsMixin):
     is_verified = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
 
-    objects = UserManager
+    objects = UserManager()
 
     USERNAME_FIELD = 'username'
     REQUIRED_FIELDS = ('email', 'first_name', 'last_name')
     
     class Meta:
-        ordering = ('-created_at')
+        ordering = ('-created_at',)
 
     def __str__(self) -> str:
         return f'{self.username} - {self.email}'

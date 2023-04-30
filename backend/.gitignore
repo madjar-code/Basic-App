@@ -1,2 +1,4 @@
 venv
-pycache
+__pycache__
+.env
+basic_app.sqlite3

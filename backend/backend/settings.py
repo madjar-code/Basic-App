@@ -33,6 +33,7 @@ INSTALLED_APPS = [
 
 INSTALLED_APPS += [
     'users',
+    'common',
 ]
 
 MIDDLEWARE = [

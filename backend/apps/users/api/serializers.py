@@ -67,7 +67,7 @@ class CreateUserSerializer(ModelSerializer):
         return user
 
 
-class AvatartSerializer(ModelSerializer):
+class AvatarSerializer(ModelSerializer):
     class Meta:
         model = User
         fields = ('avatar',)

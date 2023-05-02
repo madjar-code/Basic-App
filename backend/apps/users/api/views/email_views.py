@@ -35,8 +35,8 @@ class SendEmailPasswordReset(APIView):
 
         # STOP user from spamming email verification
         if self.request.session.has_key('password_reset_email_sent'):
-            delta: int = round((self.request.session['password_reset_email_sent'] +\
-                600) - datetime.now().timestamp())
+            delta: int = round((self.request.session['password_reset_email_sent'] + 600) -\
+                datetime.now().timestamp())
 
             if delta > 0:
                 return Response({

@@ -1,4 +1,4 @@
-import environ, sys
+import environ, sys, os
 from datetime import timedelta
 from pathlib import Path
 
@@ -88,12 +88,56 @@ AUTH_USER_MODEL = 'users.User'
 
 AUTH_PASSWORD_VALIDATORS = []
 
+# JWT settings
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=5),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
+    'ROTATE_REFRESH_TOKENS': True,
+    'BLACKLIST_AFTER_ROTATION': True,
+    'SIGNING_KEY': SECRET_KEY,
+    'AUTH_HEADER_TYPES': ('JWT',),
+}
+
+# Password token settings
+PASSWORD_RESET_TIMEOUT = 300
+
+# Summernote settings
+X_FRAME_OPTIONS = 'SAMEORIGIN'
+SUMMERNOTE_THEME = 'bs4'
+SUMMERNOTE_CONFIG = {
+    'summernote': {
+        'width': '100%',
+        'height': '600',
+        'fontNames': ['Arial', 'Arial Black', 'Comic Sans MS', 'Courier New',
+                      'Helvetica Neue', 'Helvetica', 'Impact', 'Lucida Grande',
+                      'Tahoma', 'Times New Roman', 'Verdana', ],
+        'attachment_filesize_limit': 1024*1024*10,
+
+
+    },
+    'attachment_require_authentication': True,
+}
+
 LANGUAGE_CODE = 'en'
 
 TIME_ZONE = 'Europe/Moscow'
 USE_I18N = True
 USE_TZ = True
 
+SWAGGER_SETTINGS = {
+    'USE_SESSION_AUTH': False,
+    'SECURITY_DEFINITIONS': {
+        'JWT': {
+            'type': 'apiKey',
+            'name': 'Authorization',
+            'in': 'header'
+        }
+    }
+}
+
+# Media settings
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
 
 STATIC_URL = 'static/'
 

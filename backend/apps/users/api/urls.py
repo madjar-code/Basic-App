@@ -19,6 +19,6 @@ urlpatterns = [
     path('password/reset/<str:uid>/<str:token>/', ResetUserPassword.as_view()),
     path('avatar/', UploadUserAvatar.as_view()),
     path('details/', ChangeUserDetails.as_view()),
-    path('delete/', SendEmailDeleteUser.as_view()),
     path('delete/<str:uid>/<str:token>/', DeleteUser.as_view()),
+    path('delete/', SendEmailDeleteUser.as_view()),
 ]

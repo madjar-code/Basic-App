@@ -17,6 +17,7 @@ from drf_yasg.utils import swagger_auto_schema
 from users.models import User
 from users.utils import (
     PasswordResetTokenGenerator,
+    EmailTokenGenerator
 )
 
 from ..serializers import (
@@ -32,6 +33,8 @@ class RMessages(str, Enum):
     USER_DELETED = 'Successfully deleted user.'
     INVALID_TOKEN = 'Given token is not valid'
     CANNOT_REGISTER = 'Cannot register user when already logged in.'
+    SUCCESS_VERIFICATION = 'Successfully verified user.'
+    ALREADY_VERIFIED = 'User is already verified.'
 
 
 class UploadUserAvatar(APIView):
@@ -108,6 +111,34 @@ class ChangeUserPassword(APIView):
             return Response({'detail': RMessages.INCORRECT_PASSWORD.value},
                             status=status.HTTP_400_BAD_REQUEST)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+class ActivateUser(APIView):
+    """
+    Activate User
+    Activate a User with given ``UID`` and ``Token``.
+    """
+    permission_classes = [AllowAny]
+
+    @swagger_auto_schema(responses={200: openapi.Response(description='Ok'), 400: openapi.Response(description="Bad Request"), 404: openapi.Response(description='Not Found'), 406: openapi.Response(description="Invalid Token")})
+    def post(self, request: Request, token: str, uid: str, format=None):
+        uidb64 = force_str(urlsafe_base64_decode(uid))
+
+        user = get_object_or_404(User, id=uidb64)
+        token = EmailTokenGenerator().check_token(user, token)
+
+        if token:
+            if not user.is_verified:
+                user.is_verified = True
+                user.save()
+
+                return Response({'Verified': RMessages.SUCCESS_VERIFICATION.value},
+                                status=status.HTTP_201_CREATED)
+            return Response({'Bad Request': RMessages.ALREADY_VERIFIED.value},
+                            status=status.HTTP_400_BAD_REQUEST)
+        return Response({'Invalid Token': RMessages.INVALID_TOKEN.value},
+                        status=status.HTTP_406_NOT_ACCEPTABLE)
 
 
 class BlacklistToken(APIView):

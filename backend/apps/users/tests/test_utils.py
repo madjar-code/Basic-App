@@ -2,6 +2,7 @@ from typing import (
     NoReturn,
 )
 from django.core import mail
+from django.core.mail import EmailMessage
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
 from rest_framework.test import (
@@ -46,3 +47,59 @@ class TestUtils(APITestCase):
             check_token(self.user, token)
 
         self.assertTrue(token_decoded)
+
+    def test_send_email_verification(self) -> None | NoReturn:
+        """
+        E-Mail with email verification is sent with every 
+        important information.
+        """
+        send_email_verification(self.request, self.user)
+        
+        email: EmailMessage = mail.outbox[0]
+        uid = urlsafe_base64_encode(force_bytes(self.user.id))
+        token = EmailTokenGenerator().make_token(self.user)
+
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertEqual(email.to[0], self.user.email)
+        self.assertEqual(email.subject, 'Basic App - Activate your account')
+        self.assertIn(self.user.username, email.body)
+        self.assertIn(uid, email.body)
+        self.assertIn(token, email.body)
+
+    def test_send_email_password_reset(self) -> None | NoReturn:
+        """
+        E-Mail with password reset is sent with every
+        important information
+        """
+        send_email_password_reset(self.request, self.user)
+        
+        email: EmailMessage = mail.outbox[0]
+        uid = urlsafe_base64_encode(force_bytes(self.user.id))
+        token = PasswordResetTokenGenerator().make_token(self.user)
+
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertEqual(email.to[0], self.user.email)
+        self.assertEqual(
+            email.subject, 'Basic App - Reset your password')
+        self.assertIn(self.user.username, email.body)
+        self.assertIn(uid, email.body)
+        self.assertIn(token, email.body)
+    
+    def test_send_email_delete_user(self) -> None | NoReturn:
+        """
+        E-Mail with account removal is sent with every
+        important information
+        """
+        send_email_delete_user(self.request, self.user)
+        
+        email: EmailMessage = mail.outbox[0]
+        uid = urlsafe_base64_encode(force_bytes(self.user.id))
+        token = DeleteAccountTokenGenerator().make_token(self.user)
+
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertEqual(email.to[0], self.user.email)
+        self.assertEqual(
+            email.subject, 'Basic App - Delete your account')
+        self.assertIn(self.user.username, email.body)
+        self.assertIn(uid, email.body)
+        self.assertIn(token, email.body)

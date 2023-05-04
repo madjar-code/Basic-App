@@ -34,6 +34,7 @@ INSTALLED_APPS += [
     'users',
     'common',
     'posts',
+    'comments',
 ]
 
 MIDDLEWARE = [

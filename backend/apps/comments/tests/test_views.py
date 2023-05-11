@@ -75,3 +75,65 @@ class TestViews(APITestCase):
         }, follow=True)
 
         self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_send_comment_as_auth_user(self):
+        """
+        Authenticated user can send comments
+        """
+        self.authenticate_user()
+
+        response = self.client.post('/api/comments/test-post/send/', data={
+            'body': 'Test comment'
+        }, follow=True)
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(Post.objects.get(slug='test-post').\
+            comments.get(author=self.user).author, self.user)
+
+    def test_send_comment_on_nonpublic_post_as_auth_user(self):
+        """
+        Authenticated user cannot send comments on nonpublic post
+        """
+        self.authenticate_user()
+
+        response = self.client.post('/api/comments/private-post/send/', data={
+            'body': 'Test comment'
+        }, follow=True)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_send_comment_on_non_existing_post(self):
+        """
+        User cannot send comments on non existing post
+        """
+        response = self.client.post('/api/comments/random-site/send/', data={
+            'body': 'Test comment'
+        }, follow=True)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_send_comment_on_non_existing_post_as_auth_user(self):
+        """
+        Authenticated user cannot send comments on non existing post
+        """
+        self.authenticate_user()
+        response = self.client.post('/api/comments/random-site/send/', data={
+            'body': 'Test comment'
+        }, follow=True)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_send_many_comments(self):
+        """
+        Authenticated user cannot send multiple comments in short time window
+        """
+        self.authenticate_user()
+
+        res = self.client.post('/api/comments/test-post/send/', data={
+            'body': 'Test comment'
+        }, follow=True)
+
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+
+        res = self.client.post('/api/comments/test-post/send/', data={
+            'body': 'Another comment'
+        }, follow=True)
+
+        self.assertEqual(res.status_code, status.HTTP_429_TOO_MANY_REQUESTS)

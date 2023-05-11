@@ -168,5 +168,5 @@ class DeleteUser(APIView):
             user.delete()
             return Response({'Deleted': RMessages.USER_DELETED.value},
                             status=status.HTTP_201_CREATED)
-        return Response({'Invalid Token': RMessages.INVALID_TOKEN},
+        return Response({'Invalid Token': RMessages.INVALID_TOKEN.value},
                         status=status.HTTP_406_NOT_ACCEPTABLE)

@@ -27,6 +27,7 @@ urlpatterns = [
          cache_timeout=0), name='schema-redoc'),
     # Apps
     path('api/posts/', include('posts.api.urls')),
+    path('api/comments/', include('comments.api.urls')),
     path('api/user/', include('users.api.urls')),
     # Tokens
     path('api/token/', TokenObtainPairView.as_view()),

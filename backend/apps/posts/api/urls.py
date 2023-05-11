@@ -4,6 +4,6 @@ from posts.api.views import *
 
 
 urlpatterns = [
-    path('', PostList.as_view()),
+    path('', PostsList.as_view()),
     path('<slug:slug>/', PostDetail.as_view()),
 ]

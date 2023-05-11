@@ -1,4 +1,3 @@
-from rest_framework import serializers
 from rest_framework.serializers import ModelSerializer
 from users.api.serializers import UserSerializer
 
@@ -12,7 +11,7 @@ class TagSerializer(ModelSerializer):
             'id',
             'name',
         )
-        read_only_fields = ('__all__')
+        # read_only_fields = ('__all__')
 
 
 class PostSerializer(ModelSerializer):

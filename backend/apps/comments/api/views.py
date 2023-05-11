@@ -65,7 +65,7 @@ class CreateComment(APIView):
             self.request.session.create()
 
         if self.request.session.has_key('comment_posted'):
-            delta = round((self.request.session['comments_posted'] + 600 -\
+            delta = round((self.request.session['comment_posted'] + 600 -\
                 datetime.now().timestamp()))
             if delta > 0:
                 return Response({'Too Many Requests': RMessages.TOO_MANY_REQUESTS.value},

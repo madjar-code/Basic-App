@@ -24,7 +24,7 @@ class RMessages(str, Enum):
     VERIFICATION_PROBLEM = 'Please activate your account first.'
 
 
-class CommentList(APIView):
+class CommentsList(APIView):
     """
     List of Comments
     

@@ -1,0 +1,77 @@
+from typing import (
+    NoReturn,
+)
+from rest_framework import status
+from rest_framework.test import APITestCase
+from users.models import User
+from posts.models import Post
+
+
+class TestViews(APITestCase):
+    def setUp(self) -> None:
+        self.user = User.objects.create_user(
+            username='test', email='test@test.com', password='test')
+        self.post: Post = Post.objects.create(
+            title='Test Post', slug='test-post', thumbnail=\
+            'https://www.test.example.com', author=self.user,
+            body='Test content of the post', read_time=5, is_public=True)
+        self.private_post = Post.objects.create(
+            title='Private Post', slug='private-post', thumbnail=\
+            'https://www.test.example.com', author=self.user,
+            body='Test content of the post', read_time=5, is_public=False)
+
+    def authenticate_user(self) -> None:
+        self.user.is_verified = True
+        self.client.force_login(self.user)
+        self.client.force_authenticate(user=self.user)
+
+    def test_comments(self) -> None | NoReturn:
+        """User can see comments for public post"""
+        response = self.client.get('/api/comments/test-post/', data={
+            'body': 'test'
+        }, follow=True)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_comments_as_auth_user(self):
+        """
+        Authenticated user can see comments for public post
+        """
+        self.authenticate_user()
+
+        res = self.client.get('/api/comments/test-post/', data={
+            'body': 'test'
+        }, follow=True)
+
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+
+    def test_comments_for_nonpublic_post(self):
+        """
+        User cannot see comments for nonpublic post
+        """
+        res = self.client.get('/api/comments/private-post/', data={
+            'body': 'test'
+        }, follow=True)
+
+        self.assertEqual(res.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_comments_for_nonpublic_post_as_auth_user(self):
+        """
+        Authenticated user cannot see comments for nonpublic post
+        """
+        self.authenticate_user()
+
+        res = self.client.get('/api/comments/private-post/', data={
+            'body': 'test'
+        }, follow=True)
+
+        self.assertEqual(res.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_send_comment(self):
+        """
+        Unathenticated user cannot send comments
+        """
+        res = self.client.post('/api/comments/test-post/send/', data={
+            'body': 'test'
+        }, follow=True)
+
+        self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)

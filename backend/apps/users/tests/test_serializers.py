@@ -49,7 +49,7 @@ class TestSerializers(TestCase):
         self.create_user_serializer = CreateUserSerializer(data={
             'username': 'testusername',
             'email': 'testemail@example.com',
-            'password': 'test',
+            'password': 'strongpassword',
             'first_name': 'Test',
             'last_name': 'Tested',
         })
@@ -169,7 +169,7 @@ class TestSerializers(TestCase):
         """
         User Personal Details serializer
         """
-        serializer = self.user_personal_details_serializer
+        serializer = self.user_details_serializer
 
         self.assertTrue(serializer.is_valid())
 

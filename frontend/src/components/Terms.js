@@ -103,3 +103,5 @@ const Terms = () => {
     </div>
   )
 }
+
+export default Terms

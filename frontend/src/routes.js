@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { Route, Redirect } from 'react-router'
+import { Route, Navigate } from 'react-router-dom'
 import { UserContext } from "./providers/UserContext";
 import PropTypes from 'prop-types'
 
@@ -11,7 +11,7 @@ export const NoAuthRoute = (props) => {
     <Route
       path={props.path}
       render={(data) =>
-        !user ? <props.component {...data}/> : <Redirect to='/'/>
+        !user ? <props.component {...data}/> : <Navigate to='/'/>
       }
     />
   )
@@ -28,7 +28,7 @@ export const ProtectedRoute = (props) => {
     <Route
       path={props.path}
       render={(data) =>
-        user ? <props.component {...data} /> : <Redirect to="/login" />
+        user ? <props.component {...data} /> : <Navigate to="/login" />
       }
     />
   );
